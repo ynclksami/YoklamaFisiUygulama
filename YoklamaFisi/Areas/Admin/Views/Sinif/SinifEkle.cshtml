@@ -1,0 +1,20 @@
+﻿@model YoklamaFisi.Models.Entities.Sinif
+@{
+    ViewData["Title"] = "SinifEkle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Sınıf Ekleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+<form class="form-group" method="post">
+    <label>Sınıf Adı</label>
+    <input class="form-control" type="text" name="SinifAd" required="" maxlength="50" />
+    <br />
+    <button class="btn btn-outline-success"><i class="fa fa-edit"></i> Sınıf Ekle</button>
+    <a href="/Admin/Sinif/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+</form>

@@ -1,0 +1,41 @@
+﻿@model OgrenciEkleViewModel
+@{
+    ViewData["Title"] = "OgrencilerEkle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Öğrenci Ekleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+<form class="form-group" method="post" asp-action="OgrencilerEkle">
+    
+    @* Hata özetini göster (İsteğe bağlı ama önerilir) *@
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @* 3. Label ve Input'ları "asp-for" Tag Helper ile bağlayın *@
+    <label asp-for="Numara"></label>
+    <input class="form-control" asp-for="Numara" />
+    <span asp-validation-for="Numara" class="text-danger"></span> @* Hata mesajı *@
+    <br />
+    
+    <label asp-for="AdSoyad"></label>
+    <input class="form-control" asp-for="AdSoyad" />
+    <span asp-validation-for="AdSoyad" class="text-danger"></span>
+    <br />
+    
+    <label asp-for="SinifId"></label>
+    @* 4. Sınıf için Dropdown (SELECT) oluşturun *@
+    <select class="form-control" asp-for="SinifId" asp-items="@Model.SinifListesi">
+        @* Varsayılan boş seçenek *@
+        <option value="">-- Lütfen Sınıf Seçin --</option>
+    </select>
+    <span asp-validation-for="SinifId" class="text-danger"></span>
+    <br />
+    
+    <button class="btn btn-outline-success"><i class="fa fa-edit"></i> Öğrenci Ekle</button>
+    <a href="/Admin/Ogrenciler/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+</form>

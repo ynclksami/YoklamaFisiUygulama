@@ -1,0 +1,90 @@
+﻿@model DersProgramiEkleViewModel
+@{
+    ViewData["Title"] = "Ders Programı Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Öğretmen Ders Atama Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+<form class="form-group" method="post">
+
+    <label>Sınıf</label>
+    <select class="form-control" asp-for="SinifId" asp-items="@Model.SinifListesi" id="SinifSelect">
+        <option value="">-- Sınıf Seçiniz --</option>
+    </select>
+    <span asp-validation-for="SinifId" class="text-danger"></span>
+    <br />
+
+    <label>Gün</label>
+    <select class="form-control" asp-for="Gun" asp-items="@Model.GunListesi">
+        <option value="">-- Gün Seçiniz --</option>
+    </select>
+    <span asp-validation-for="Gun" class="text-danger"></span>
+    <br />
+
+    <label>Ders Saati</label>
+    <input class="form-control" asp-for="DersSaati" type="number" min="1" max="10" />
+    <span asp-validation-for="DersSaati" class="text-danger"></span>
+    <br />
+
+    <label>Ders</label>
+    <select class="form-control" asp-for="DersId" id="DersSelect" disabled>
+        <option value="">-- Önce Sınıf Seçiniz --</option>
+    </select>
+    <span asp-validation-for="DersId" class="text-danger"></span>
+    <br />
+
+    <label>Öğretmen 1</label>
+    <select class="form-control" asp-for="Ogretmen1Id" asp-items="@Model.OgretmenListesi">
+        <option value="">-- Seçiniz --</option>
+    </select>
+    <br />
+
+    <label>Öğretmen 2</label>
+    <select class="form-control" asp-for="Ogretmen2Id" asp-items="@Model.OgretmenListesi">
+        <option value="">-- Seçiniz --</option>
+    </select>
+    <br />
+
+    <label>Öğretmen 3</label>
+    <select class="form-control" asp-for="Ogretmen3Id" asp-items="@Model.OgretmenListesi">
+        <option value="">-- Seçiniz --</option>
+    </select>
+    <br />
+
+    <button class="btn btn-outline-success"><i class="fa fa-edit"></i> Ders Programı Ekle</button>
+    <a href="/Admin/DersProgramlari/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+</form>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#SinifSelect').change(function () {
+                var sinifId = $(this).val();
+                var dersSelect = $('#DersSelect');
+
+                if (sinifId) {
+                    $.getJSON('@Url.Action("GetDerslerBySinif", "DersProgramlari", new { area = "Admin" })', { sinifId: sinifId }, function (data) {
+                        dersSelect.empty();
+                        dersSelect.append('<option value="">-- Ders Seçiniz --</option>');
+                        $.each(data, function (i, ders) {
+                            dersSelect.append('<option value="' + ders.value + '">' + ders.text + '</option>');
+                        });
+                        dersSelect.removeAttr('disabled'); // aktif ediyor
+                    });
+                } else {
+                    dersSelect.empty();
+                    dersSelect.append('<option value="">-- Önce Sınıf Seçiniz --</option>');
+                    dersSelect.attr('disabled', 'disabled');
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,52 @@
+﻿@model X.PagedList.IPagedList<Ogrenci>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Öğrenci Listeleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Sınıf</th>
+            <th>Numara</th>
+            <th>Adı Soyadı</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Sinif.SinifAd</td>
+                <td>@item.Numara</td>
+                <td>@item.AdSoyad</td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fa fa-eyedropper"></i> Sil</button>
+                    </form>
+                </td>
+                <td><a href="/Admin/Ogrenciler/OgrencilerGuncelle/@item.Id" class="btn btn-outline-info"><i class="fa fa-anchor"></i> Güncelle</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="/Admin/Ogrenciler/OgrencilerEkle/" class="btn btn-outline-success"><i class="fa fa-edit"></i> Öğrenci Ekle</a>
+
+<br />
+<!-- 🔹 Sayfalama -->
+<div class="mt-3">
+    @Html.PagedListPager(Model,
+    sayfa => Url.Action("Index", "Ogrenciler", new { area = "Admin", sayfa }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new List<string> { "page-item" },
+            PageClasses = new List<string> { "page-link" }
+        })
+</div>

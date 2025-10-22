@@ -1,0 +1,25 @@
+﻿@model YoklamaFisi.Models.Entities.Sinif
+@{
+    ViewData["Title"] = "SinifGuncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Sınıf Güncelleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("SinifGuncelle", "Sinif", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.HiddenFor(x => x.SinifId)
+        <label>Sınıf Şube Ad</label>
+        @Html.TextBoxFor(x => x.SinifAd, new { @class = "form-control" })
+        <br />
+        <button class="btn btn-outline-info"><i class="fa fa-refresh"></i>Güncelle</button>
+        <a href="/Admin/Sinif/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+    </div>
+}
+

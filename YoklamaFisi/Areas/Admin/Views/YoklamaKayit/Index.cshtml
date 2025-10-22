@@ -1,0 +1,116 @@
+﻿@model X.PagedList.IPagedList<YoklamaKaydi>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Yoklama Kaydı Listeleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+<!-- 🔹 Tarih Seçme Formu -->
+<form method="get" asp-action="Index" asp-controller="YoklamaKayit" asp-area="Admin" class="form-inline mb-3">
+    <div class="input-group">
+        <input type="date" name="tarih" value="@ViewBag.SeciliTarih" class="form-control" />
+        <button type="submit" class="btn btn-outline-primary">Listele</button>
+    </div>
+</form>
+
+<!-- 🔹 PDF / Excel Butonları -->
+<div class="mb-3">
+    <a asp-action="ExportPdf" asp-route-tarih="@ViewBag.SeciliTarih" class="btn btn-outline-danger">PDF'ye Aktar</a>
+    <a asp-action="ExportExcel" asp-route-tarih="@ViewBag.SeciliTarih" class="btn btn-outline-success">Excel'e Aktar</a>
+</div>
+
+<!-- 🔹 Toplu Silme Formu -->
+<form asp-action="TopluSil" asp-controller="YoklamaKayit" asp-area="Admin" method="post">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width:40px;"><input type="checkbox" id="tumunuSec" /></th>
+                <th>Öğrenci</th>
+                <th>Ders Saati</th>
+                <th>Tarih</th>
+                <th>Geldi Mi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="secilenKayitlar" value="@item.Id" class="kayitSec" />
+                        </td>
+                        <td>@item.Ogrenci.AdSoyad</td>
+                        <td>@item.DersSaati</td>
+                        <td>@item.Tarih.ToString("dd.MM.yyyy")</td>
+                        <td>@(item.GeldiMi ? "Evet" : "Hayır")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Kayıt bulunamadı</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-danger"
+            onclick="return confirm('Seçilen kayıtları silmek istediğinize emin misiniz?')">
+        Seçilenleri Sil
+    </button>
+</form>
+
+<!-- 🔹 Ders Saati Bazlı İstatistik -->
+@if (ViewBag.DersSaatiIstatistik != null)
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Ders Saati Bazlı İstatistik</h5>
+            <table class="table table-bordered table-sm w-50">
+                <thead>
+                    <tr>
+                        <th>Ders Saati</th>
+                        <th>Gelmeyen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.DersSaatiIstatistik)
+                    {
+                        <tr>
+                            <td>@item.DersSaati</td>
+                            <td>@item.Gelmeyen</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+}
+
+<!-- 🔹 Sayfalama -->
+@Html.PagedListPager(Model,
+sayfa => Url.Action("Index", "YoklamaKayit", new { area = "Admin", sayfa, tarih = ViewBag.SeciliTarih }),
+    new PagedListRenderOptions
+    {
+        LiElementClasses = new List<string> { "page-item" },
+        PageClasses = new List<string> { "page-link" }
+    })
+
+@section Scripts {
+    <script>
+        document.getElementById("tumunuSec")?.addEventListener("change", function () {
+            const durum = this.checked;
+            document.querySelectorAll(".kayitSec").forEach(cb => cb.checked = durum);
+        });
+    </script>
+}

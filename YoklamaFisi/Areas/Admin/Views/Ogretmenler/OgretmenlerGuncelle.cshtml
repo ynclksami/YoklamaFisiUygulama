@@ -1,0 +1,24 @@
+﻿@model YoklamaFisi.Models.Entities.Ogretmen
+@{
+    ViewData["Title"] = "OgretmenlerGuncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Öğretmenler Güncelleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("OgretmenlerGuncelle", "Ogretmenler", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.HiddenFor(x => x.Id)
+        <label>Adı Soyadı</label>
+        @Html.TextBoxFor(x => x.AdSoyad, new { @class = "form-control" })
+        <br />
+        <button class="btn btn-outline-info"><i class="fa fa-refresh"></i>Güncelle</button>
+        <a href="/Admin/Ogretmenler/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+    </div>
+}

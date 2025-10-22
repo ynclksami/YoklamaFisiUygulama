@@ -1,0 +1,88 @@
+﻿@model DersProgramiGuncelleViewModel
+@{
+    ViewData["Title"] = "DersProgramlariGuncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Ders Programı Güncelleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("DersProgramlariGuncelle", "DersProgramlari", FormMethod.Post, new { area = "Admin" }))
+{
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        <label>Sınıf</label>
+        @Html.DropDownListFor(x => x.SinifId, Model.Siniflar!, "-- Sınıf Seçiniz --", new { @class = "form-control", id = "SinifSelect" })
+    </div>
+
+    <div class="form-group">
+        <label>Gün</label>
+        @Html.DropDownListFor(x => x.Gun, Model.Gunler!, "-- Gün Seçiniz --", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Ders Saati</label>
+        @Html.TextBoxFor(x => x.DersSaati, new { @class = "form-control", type = "number", min = "1", max = "10" })
+    </div>
+
+    <div class="form-group">
+        <label>Ders</label>
+        @Html.DropDownListFor(x => x.DersId, Model.Dersler!, "-- Ders Seçiniz --", new { @class = "form-control", id = "DersSelect" })
+    </div>
+
+    <div class="form-group">
+        <label>1. Öğretmen</label>
+        @Html.DropDownListFor(x => x.Ogretmen1Id, Model.Ogretmenler!, "Seçiniz", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>2. Öğretmen</label>
+        @Html.DropDownListFor(x => x.Ogretmen2Id, Model.Ogretmenler!, "Seçiniz", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>3. Öğretmen</label>
+        @Html.DropDownListFor(x => x.Ogretmen3Id, Model.Ogretmenler!, "Seçiniz", new { @class = "form-control" })
+    </div>
+
+    <br />
+    <button class="btn btn-outline-info"><i class="fa fa-refresh"></i> Güncelle</button>
+    <a href="/Admin/DersProgramlari/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+                $('#SinifSelect').change(function () {
+            var sinifId = $(this).val();
+            var dersSelect = $('#DersSelect');
+
+            if (sinifId) {
+                dersSelect.prop('disabled', true);
+                dersSelect.html('<option>Yükleniyor...</option>');
+
+                $.getJSON('@Url.Action("GetDerslerBySinif", "DersProgramlari", new { area = "Admin" })', { sinifId: sinifId }, function (data) {
+                    dersSelect.empty();
+                    dersSelect.append('<option value="">-- Ders Seçiniz --</option>');
+                    $.each(data, function (i, ders) {
+                        dersSelect.append('<option value="' + ders.value + '">' + ders.text + '</option>');
+                    });
+                    dersSelect.prop('disabled', false);
+                });
+            } else {
+                dersSelect.empty();
+                dersSelect.append('<option value="">-- Önce Sınıf Seçiniz --</option>');
+                dersSelect.prop('disabled', true);
+            }
+        });
+
+        });
+    </script>
+}

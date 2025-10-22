@@ -1,0 +1,11 @@
+# Visual Studio ve Rider
+.vs/
+.idea/
+
+# Derleme çıktıları
+[Bb]in/
+[Oo]bj/
+
+# Kullanıcıya özel dosyalar
+*.user
+*.suo

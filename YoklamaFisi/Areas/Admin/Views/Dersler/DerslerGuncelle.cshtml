@@ -1,0 +1,38 @@
+﻿@model DerslerGuncelleViewModel
+@{
+    ViewData["Title"] = "DerslerGuncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Ders Güncelleme Sayfası</b></h2>
+        </div>
+    </div>
+</div>
+
+
+<form class="form-group" method="post" asp-action="DerslerGuncelle">
+    @Html.HiddenFor(x => x.DersId)
+
+    <label asp-for="Ad"></label>
+    <input class="form-control" asp-for="Ad" />
+    <span asp-validation-for="Ad" class="text-danger"></span>
+    <br />
+
+    <label asp-for="KisaAd"></label>
+    <input class="form-control" asp-for="KisaAd" />
+    <span asp-validation-for="KisaAd" class="text-danger"></span>
+    <br />
+
+    <label asp-for="SinifId"></label>
+    <select class="form-control" asp-for="SinifId" asp-items="@Model.SinifListesi">
+        <option value="">-- Lütfen Sınıf Seçin --</option>
+    </select>
+    <span asp-validation-for="SinifId" class="text-danger"></span>
+    <br />
+
+    <button class="btn btn-outline-info"><i class="fa fa-refresh"></i> Güncelle</button>
+    <a href="/Admin/Dersler/Index/" class="btn btn-outline-danger"><i class="fa fa-backward"></i> Geri Dön</a>
+</form>

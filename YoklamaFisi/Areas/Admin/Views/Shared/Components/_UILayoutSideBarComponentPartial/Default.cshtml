@@ -1,0 +1,44 @@
+﻿@model AppUser
+<nav id="sidebar">
+    <div class="sidebar_blog_1">
+        <div class="sidebar-header">
+            <div class="logo_section">
+                <a href="/Admin/Dashboard/Index/"><img class="logo_icon img-responsive" src="@Model.ProfileImage" alt="#" /></a>
+            </div>
+        </div>
+        <div class="sidebar_user_info">
+            <div class="icon_setting"></div>
+            <div class="user_profle_side">
+                <div class="user_img"><img class="img-responsive" src="@Model.ProfileImage" alt="#" /></div>
+                <div class="user_info">
+                    <h6>@Model?.FullName</h6>
+                    <p><span class="online_animation"></span> Web Developer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar_blog_2">
+        <ul class="list-unstyled components">
+            <li><a href="/Admin/Dashboard/Index/"><i class="fa fa-dashboard yellow_color"></i> <span>Dashboard</span></a></li>
+            <li>
+            <li><a href="/Yoklama/Index/"><i class="fa fa-diamond purple_color"></i> <span>Siteye Git</span></a></li>
+            <li>
+            <li><a href="/Admin/Profile/Edit"><i class="fa fa-user green_color"></i> <span>Profilim</span></a></li>
+            <li>
+            <li><a href="/Admin/Sinif/Index/"><i class="fa flaticon-family-room orange_color"></i> <span>Sınıflar</span></a></li>
+            <li>
+            <li><a href="/Admin/Ogrenciler/Index/"><i class="fa fa-male purple_color"></i> <span>Öğrenciler</span></a></li>
+            <li>
+            <li><a href="/Admin/Ogretmenler/Index/"><i class="fa fa-book blue2_color"></i> <span>Öğretmenler</span></a></li>
+            <li>
+            <li><a href="/Admin/Dersler/Index/"><i class="fa fa-bar-chart-o green_color"></i> <span>Dersler</span></a></li>
+            <li>
+            <li><a href="/Admin/DersProgramlari/Index/"><i class="fa fa-clone yellow_color"></i> <span>Ders Programı</span></a></li>
+            <li>
+            <li><a href="/Admin/YoklamaKayit/Index/"><i class="fa fa-map purple_color2"></i> <span>Yoklama Kayıtları</span></a></li>
+            <li>
+            <li><a href="/Login/SignIn/"><i class="fa fa-folder-open green_color"></i> <span>Çıkış</span></a></li>
+            <li>
+        </ul>
+    </div>
+</nav>

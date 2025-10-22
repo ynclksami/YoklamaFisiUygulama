@@ -1,0 +1,112 @@
+﻿@model EditProfileViewModel
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Profil Bilgilerim</b></h2>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <!-- Profil resmi yükleme -->
+    <div class="mb-3">
+        <label asp-for="ProfileImage" class="form-label"></label>
+        <input asp-for="ProfileImage" type="file" class="form-control" accept="image/*" id="profileImageInput" />
+        <span asp-validation-for="ProfileImage" class="text-danger"></span>
+
+        <!-- Mevcut resim varsa -->
+        @if (!string.IsNullOrEmpty(Model.ExistingImage))
+        {
+            <div class="mt-3 text-center">
+                <img id="currentImage" src="@Model.ExistingImage" width="120" height="120" class="rounded-circle border" alt="Profil Fotoğrafı" />
+                <div class="mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnRemoveImage">
+                        <i class="bi bi-trash"></i> Resmi Kaldır
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- Yeni resim önizleme -->
+        <div class="mt-3 text-center d-none" id="previewContainer">
+            <p class="fw-bold">Yeni Resim Önizlemesi</p>
+            <img id="previewImage" src="#" width="120" height="120" class="rounded-circle border" alt="Yeni Resim" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NewPassword" class="form-label"></label>
+        <input asp-for="NewPassword" class="form-control" />
+        <span asp-validation-for="NewPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Yeni resim seçildiğinde önizleme göster
+        document.getElementById('profileImageInput')?.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.classList.add('d-none');
+            }
+        });
+
+        // Mevcut resmi kaldır
+        document.getElementById('btnRemoveImage')?.addEventListener('click', function () {
+            if (confirm('Profil resmini kaldırmak istediğinize emin misiniz?')) {
+                const img = document.getElementById('currentImage');
+                if (img) img.remove();
+                this.remove();
+                // Gizli input ile backend'e "resim silinsin" işareti gönder
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'RemoveImage';
+                input.value = 'true';
+                document.querySelector('form').appendChild(input);
+            }
+        });
+    </script>
+}

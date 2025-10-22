@@ -1,0 +1,229 @@
+﻿@model List<Ogrenci>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int dersSaati = (int)ViewBag.DersSaati;
+    int sinifId = ViewBag.SinifId as int? ?? 1;
+    string sinifAdi = ViewBag.SinifAdi ?? "";
+    var mevcut = (List<YoklamaKaydi>)ViewBag.MevcutKayitlar ?? new List<YoklamaKaydi>();
+
+    DateTime seciliTarih = ViewBag.SeciliTarih as DateTime? ?? DateTime.Today;
+    bool isGecmisTarih = ViewBag.IsGecmisTarih ?? false; // KRİTİK KISITLAMA
+
+    string tarihValue = seciliTarih.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    var siniflar = (SelectList)ViewBag.SiniflarList;
+
+    // --- YENİ: Ders Programı Bilgisini Al ve Başlığı Hazırla ---
+    var dersProgrami = ViewBag.DersProgrami as DersProgrami;
+    string dersBilgisi = $"{dersSaati}. Ders Saati"; // Varsayılan başlık
+
+    if (dersProgrami != null && dersProgrami.Ders != null)
+    {
+        string dersAdi = dersProgrami.Ders.Ad;
+        var ogretmenler = new List<string?>();
+        if (dersProgrami.Ogretmen1 != null) ogretmenler.Add(dersProgrami.Ogretmen1.AdSoyad);
+        if (dersProgrami.Ogretmen2 != null) ogretmenler.Add(dersProgrami.Ogretmen2.AdSoyad);
+        if (dersProgrami.Ogretmen3 != null) ogretmenler.Add(dersProgrami.Ogretmen3.AdSoyad);
+
+        string ogretmenBilgisi = string.Join(", ", ogretmenler.Where(o => !string.IsNullOrEmpty(o)));
+
+        // Başlığı güncelle: "Matematik (5. Saat)"
+        dersBilgisi = $"{dersAdi} ({dersSaati}. Saat)";
+
+        // Öğretmen varsa ekle: "Matematik (5. Saat) - Ali Veli"
+        if (!string.IsNullOrEmpty(ogretmenBilgisi))
+        {
+            dersBilgisi += $" - {ogretmenBilgisi}";
+        }
+    }
+}
+
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="page_title">
+            <h2><b>Öğrenci Yoklama Paneli</b></h2>
+        </div>
+    </div>
+</div>
+
+<h3>@sinifAdi - @dersBilgisi Yoklama Listesi (@seciliTarih.ToShortDateString())</h3>
+<br />
+<br />
+@if (TempData["HataMesaji"] != null)
+{
+    <p class="alert alert-danger">@TempData["HataMesaji"]</p>
+}
+@if (TempData["BasariMesaji"] != null)
+{
+    <p class="alert alert-success">@TempData["BasariMesaji"]</p>
+}
+
+<form id="indexForm" asp-action="Index" method="get"
+      style="margin-bottom:15px; display:flex; gap:20px; align-items:flex-end; flex-wrap:wrap;">
+
+    <style>
+        #mainSinifSelect {
+            font-size: 18px;
+            font-weight: 500;
+            height: calc(2.8rem + 2px);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+
+    <div style="flex: 1; min-width: 200px;">
+        <label><b>Sınıf Seç:</b></label>
+        @Html.DropDownList("sinifId", siniflar, new {
+        @id = "mainSinifSelect",
+                @class = "form-select",
+                onchange = "document.getElementById('indexForm').submit();"
+                })
+    </div>
+
+    <div style="flex: 1; min-width: 250px; display: flex; align-items: center; gap: 10px;">
+        <label for="tarihSecim" style="margin: 0; white-space: nowrap;"><b>Tarih Seç:</b></label>
+        <input type="date" name="tarih" id="tarihSecim" value="@tarihValue"
+               class="form-control"
+               style="flex: 1;"
+               onchange="document.getElementById('indexForm').submit();" />
+    </div>
+
+    <input type="hidden" name="dersSaati" value="@dersSaati" />
+
+    @if (isGecmisTarih)
+    {
+        <p class="alert alert-warning" style="margin: 0; padding: 6px 15px;">
+            GEÇMİŞ TARİH: Kayıt düzenleme devre dışı.
+        </p>
+    }
+</form>
+
+<style>
+    /* Label ve input yazı rengini siyah yap */
+    #indexForm label {
+        color: #000 !important;
+        padding: 10px 20px;
+        font-size: 1.2rem;
+    }
+
+    input[type="date"].form-control {
+        color: #000 !important;
+        opacity: 1 !important;
+        padding: 10px 20px;
+        font-size: 1.2rem;
+    }
+
+    input[type="date"]::-webkit-datetime-edit,
+    input[type="date"]::-webkit-datetime-edit-text,
+    input[type="date"]::-webkit-datetime-edit-month-field,
+    input[type="date"]::-webkit-datetime-edit-day-field,
+    input[type="date"]::-webkit-datetime-edit-year-field {
+        color: #000 !important;
+    }
+</style>
+
+<hr />
+
+<form asp-action="PdfOlustur" method="get" target="_blank" style="margin-bottom: 20px;">
+    <input type="hidden" name="sinifId" value="@sinifId" />
+    <input type="hidden" name="tarih" value="@tarihValue" />
+    <button type="submit" class="btn btn-outline-danger" style="padding: 10px 20px; font-size: 1.2rem; font-weight: bold;">PDF Fişi Oluştur (@seciliTarih.ToShortDateString())</button>
+</form>
+
+
+<form asp-action="Kaydet" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="DersSaati" value="@dersSaati" />
+    <input type="hidden" name="SinifId" value="@sinifId" />
+    <input type="hidden" name="Tarih" value="@tarihValue" />
+    <table class="table table-striped table-bordered" style="background-color: white;">
+        <thead>
+            <tr>
+                <th>Numara</th>
+                <th>Ad Soyad</th>
+                <th>Gelmedi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var ogr = Model[i];
+                var kayit = mevcut.FirstOrDefault(k => k.OgrenciId == ogr.Id);
+
+                <tr>
+                    <td style="vertical-align: middle;">
+                        @ogr.Numara
+                        <input type="hidden" name="ogrenciler[@i].Id" value="@ogr.Id" />
+                    </td>
+                    <td style="vertical-align: middle;">@ogr.AdSoyad</td>
+                    <td style="text-align: center;">
+                        <input type="checkbox"
+                               name="ogrenciler[@i].Gelmedi"
+                               value="true"
+                               @(kayit != null && !kayit.GeldiMi ? "checked" : "")
+                               @(isGecmisTarih ? "disabled" : "") />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <style>
+        table.table {
+            color: #000 !important;
+            font-size: 18px;
+        }
+
+            table.table th {
+                font-size: 18px;
+                font-weight: bold;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            table.table td {
+                vertical-align: middle;
+                padding: 10px 12px;
+            }
+
+            table.table input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                accent-color: black;
+            }
+
+                /* Checkbox pasif olsa bile gri görünmesin */
+                table.table input[type="checkbox"]:disabled {
+                    opacity: 1 !important;
+                }
+    </style>
+
+
+
+    @{
+        string kaydetDisabledAttr = isGecmisTarih ? "disabled" : "";
+    }
+
+    <button type="submit"
+            class="btn btn-outline-primary"
+            style="padding: 10px 20px; font-size: 1.2rem; font-weight: bold;"
+            @kaydetDisabledAttr>
+        Kaydet
+    </button>
+</form>
+
+<p style="margin-top:15px;">
+    @for (int i = 1; i <= 10; i++)
+    {
+        string disabledClass = isGecmisTarih ? "disabled-link" : "";
+
+        string targetUrl = isGecmisTarih
+        ? "#"
+        : Url.Action("Index", new { dersSaati = i, sinifId = sinifId, tarih = tarihValue });
+
+        <a href="@targetUrl"
+           class="btn btn-outline-primary @(i == dersSaati ? "active" : "") @disabledClass">@i. Ders</a>
+    }
+</p>
